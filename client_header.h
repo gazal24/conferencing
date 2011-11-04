@@ -1,0 +1,31 @@
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string>
+#include <string.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <time.h>
+
+using namespace std;
+
+#define MAXDATASIZE 1000 /* max number of bytes we can get at once */
+
+//SYSTEM
+int sockfd, sockfd_pop, numbytes;
+int PORT;
+struct hostent *he;
+struct sockaddr_in their_addr; /* client's address information */
+char *HOSTNAME =(char*)malloc(sizeof(char)*50);
+
+//USER
+string str="";
+int nb=0;
+char buf[100];
+int choice=0;

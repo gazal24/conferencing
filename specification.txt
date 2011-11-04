@@ -1,0 +1,153 @@
+===============================
+Assignemt 5
+Gazal Garg : 08CS3012
+Repaka Avinash : 08EC1027
+Group Conference Specifications
+===============================
+
+
+=================================
+========= BASIC ACTIONS =========
+=================================
+
+> The server maintains the list of all online users with list of conferences they are participating in.
+> A designated user can initiate a Conference with a topic(and can change it later).
+> A designated can get a list of all available users. He can then pick up some and send an Invite to join the Conference.
+> Users can leave a Conference at any time or may be removed by designated user.
+> Usesr can view details(realname, address, etc.) of other members in the Conference
+> A designated user can only end a Conference
+> Message send by a user in a conference is send to server and relayed to all other participating members.
+> Users can also modify/view directory structure on the server and upload/download any file. Delete previledge is given to designated user only.
+
+Following is the list of commands that is used to communicate between Client and Server to perform various actions.
+
+=================================================
+========= INTERNET RELAY CHAT PROTOCOLS =========
+=================================================
+
+__Ref:  RFC1459__
+
+Command: PASS
+Parameters: <password>
+Description: Ask user to authenticate with his secret password
+
+Command: CHPS
+Parameters: <password>
+Description: Change password
+
+Command: NICK
+Parameters: <nickname> 
+Description: To give user a nickname or change the previous one
+
+Command: USER
+Parameters: <username> <hostname> <servername> <realname>
+Description: at the beginning of connection to specify these fields of a new user
+
+Command: QUIT
+Parameters: [<Quit message>]
+Description: To leave all conferences and terminate connection with server.
+
+Command: PART
+Parameters: <conference>{,<conference>}
+Description: To leave multiple conferences in once command
+
+Command: INVITE^
+Parameters:  <conference> <nickmask>[,<nickmask>[,...]]
+Description: Invite user(s) to Conference
+
+Command: REGISTER*
+Parameters: <nickname> <username> <password> <designation>
+Description: To register a new user.
+
+Command: LOGIN*
+Parameters: <nickname> <password>
+Description: To login using nickname
+
+Command: TOPIC^
+Parameters: <conference> [<topic>]
+Description: Use to set/change the Conference Topic. Also if no paramerter supplied, return the current topic.
+
+Command: NAMES
+Parameters: <conference>
+Description: List all users in the Conference(s). If no parameter supplied, list all online users with there connected conferences.
+
+Command: LIST^
+Parameters: [<conference>{,<conference>} [<server>]]
+Description: List all Conference names with there topics.
+
+Command: INVITE^
+Parameters: <nickname> <conference>
+Description: Invite a user to a Conference
+
+Command: KICK^
+Parameters: <conference> <user> [<comment>]
+Description: Forcibly remove a user for a Conference(with a message)
+
+Command: LEAVE*
+Parameters: <conference> [<comment>]
+Description: Willfully leave a Conference
+
+Command: END*^
+Parameters: <conference> [<comment>]
+Description: End the Conference
+
+Command: WHOIS
+Parameters: <nickmask>[,<nickmask>[,...]]
+Description: Query information about the user
+
+Command: KILL
+Parameters: <nickname> <comment>
+Description: To cause a client-server connection to be closed by the server.
+
+
+==========================================
+========= FILE TRANSFER PROTOCOL =========
+==========================================
+
+__Ref:  RFC959__
+
+Command: CDUP
+Parameters: No Parameters
+Description: Change to Parent Directory.
+
+Command: CWD
+Parameters: <filepath>
+Description: Change Working Directory.
+
+Command: FLIST*
+Parameters: <filepath>
+Description: Lists the contents of a directory if a directory is named, else content of the current working directory is returned.
+
+Command: PWD
+Parameters: <pathnamme>
+Description: Print working directory. Returns the current directory of the host.
+
+Command: MKD
+Parameters: <pathnamme>
+Description: Make a directory.
+
+Command: RMD
+Parameters: <pathnamme>
+Description: Remove a directory.
+
+Command: DELE^
+Parameters: <filepath>
+Description: Delete a file.
+
+Command: STOR
+Parameters: <filepath>
+Description: Upload the specified file.
+
+Command: RETR
+Parameters: <filepath>
+Description: Download the specified file.
+
+Command: HELP
+Parameters: <filepath>
+Description: Show all available commands.
+
+Legend [ 
+ ^ : Privilege to Designated User Only, 
+ * : User Defined Protocol
+]
+ 
