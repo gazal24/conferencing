@@ -56,14 +56,63 @@ int main(int argc, char *argv[])
 	    if(str == "REGR")
 	      {
 		str = "+OK";
-		if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
-	      perror("send");
-	    
+		if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1){
+		  perror("send"); exit(0);
+		}
+		else if((nb=recv(new_fd, buf, MAXDATASIZE, 0)) <= 0) {
+		  perror  ("Recieve 2"); exit(0);
+		}
+		else {
+		  buf[nb] = '\0';
+		  str = ""; str.append(buf);
+		  fin.close();
+		  fin.open("userinfo.txt");
+		  if(fin.is_open())
+		    {
+		      conflict = 0;
+		      while (fin.good() && !fin.eof())
+			{
+			  getline(fin,line);
+			  if(line.substr(0, line.find(' ')).compare(str) == 0)
+			    conflict = 1;
+			}
+		    }
+		  if(conflict == 1)
+		    {
+		      str = "ERR";
+		      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1){
+			perror("send"); exit(0);
+		      }
+		      continue;
+		    }
+		  else 
+		    {
+		      user = str;
+		      str = "PASS";
+		      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1){
+			perror("send"); exit(0);
+		      }
+		      else if((nb=recv(new_fd, buf, MAXDATASIZE, 0)) <= 0) {
+			perror  ("Recieve 2"); exit(0);
+		      }
+		      else {
+			buf[nb] = '\0';
+			pass = ""; pass.append(buf);
+			cout << "Pass : " << pass;
+			fin.close();
+			fout.open("userinfo.txt", ios::app);
+			fout << user << " " << pass << endl;
+			fout.close();
+		      }
+		    }	
+		  fflush(0);
+		}
+		  
 	      }
 	    else if(str == "LOGI")
 	      {
 		if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
-	      perror("send");
+		  perror("send");
 	      }
 	  }//END OF else OF if(recv)
 	  

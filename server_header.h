@@ -29,15 +29,18 @@ int sin_size;
 
 
 // USER
+ifstream fin;
+ofstream fout;
+
 char buf[100];
+string str="";
+string line;
+string user, pass;
+
 int my_port = 0;
 int nb=0; //NUMBYTES
-string str="";
+int conflict=0;
 
-
-typedef struct{
-  char name[20];
-}user;
 
 typedef struct{
 

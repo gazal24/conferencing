@@ -29,3 +29,4 @@ string str="";
 int nb=0;
 char buf[100];
 int choice=0;
+char user[10],pass[10];
