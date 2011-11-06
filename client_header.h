@@ -12,13 +12,17 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <time.h>
+#include <fstream>
+#include <ctype.h>
+#include <pthread.h>
+
 
 using namespace std;
 
 #define MAXDATASIZE 1000 /* max number of bytes we can get at once */
 
 //SYSTEM
-int sockfd, sockfd_pop, numbytes;
+int sockfd;
 int PORT;
 struct hostent *he;
 struct sockaddr_in their_addr; /* client's address information */
@@ -30,3 +34,10 @@ int nb=0;
 char buf[100];
 int choice=0;
 char user[10],pass[10];
+ifstream fin;
+ofstream fout;
+pthread_t pth;
+
+typedef struct{
+  
+}conferences;

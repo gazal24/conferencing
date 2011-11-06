@@ -42,6 +42,10 @@ int main(int argc, char *argv[])
       
       if (!fork()) /* this is the child process */
 	{
+	  fout.open("sockinfo.txt", ios::app);
+	  fout << new_fd << endl;
+	  fout.close();			
+	  
 	  str = "+OK";
 	  if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 	    perror("send");
@@ -100,9 +104,16 @@ int main(int argc, char *argv[])
 			pass = ""; pass.append(buf);
 			cout << "Pass : " << pass;
 			fin.close();
+			/*
+			  FILE *fout1 = fopen("userinfo.txt", "ab");
+			  data da;
+			  da.user = user;
+			  da.pass = pass;
+			  fwrite(&da, sizeof da, 1, fout1);
+			*/
 			fout.open("userinfo.txt", ios::app);
 			fout << user << " " << pass << endl;
-			fout.close();
+			fout.close();			
 		      }
 		    }	
 		  fflush(0);
@@ -111,9 +122,48 @@ int main(int argc, char *argv[])
 	      }
 	    else if(str == "LOGI")
 	      {
+		str = "+OK";
 		if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 		  perror("send");
+		else if((nb=recv(new_fd, buf, MAXDATASIZE, 0)) <= 0) {
+		  perror  ("Recieve 2"); exit(0);
+		}
+		else {
+		  buf[nb] = '\0';
+		  user= ""; user.append(buf);
+		  str = "PASS";
+		  if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
+		    perror("send");
+		  else if((nb=recv(new_fd, buf, MAXDATASIZE, 0)) <= 0) {
+		    perror  ("Recieve 2"); exit(0);
+		  }
+		  buf[nb] = '\0';
+		  pass= ""; pass.append(buf);
+		  cout << user << pass;
+		  fflush(0);
+		  
+		  fin.close();
+		  fin.open("userinfo.txt");
+		  if(fin.is_open())
+		    {
+		      int found;
+		      while (fin.good() && !fin.eof())
+			{
+			  getline(fin,line);
+			  found=line.find(' ');
+			  if(line.substr(0, found).compare(user) == 0 && line.substr(found+1, line.find(' ', found+1)).compare(pass) == 0)
+			    cout << "Match" << endl;
+			  else 
+			    cout << " NO Match" << endl;
+			}
+		    }
+		}
 	      }
+	    else if(str ==  "RELAY") {
+	      cout << "yea i got relay from thread";
+	      fflush(0);
+	      //fin.open("sockfds");
+	    }
 	  }//END OF else OF if(recv)
 	  
 	}//END OF fork()

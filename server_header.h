@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <fstream>
+#include <ctype.h>
 
 using namespace std;
 
@@ -43,6 +44,13 @@ int conflict=0;
 
 
 typedef struct{
+  char user[10];
+  char pass[10];
+}data;
 
+typedef struct{
+  int id;
+  int *members;
+  char *topic;
 }conference;
 

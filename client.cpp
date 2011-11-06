@@ -1,4 +1,16 @@
 #include "client_header.h"
+void *threadFunc(void* arg)
+{
+  //  int sockf = *((int *)arg);
+  int sockf = (long)arg;
+  sleep(1);
+  str = "RELAY";
+  if (send (sockf, str.c_str(), strlen(str.c_str()), 0) == -1) {
+    perror("send:"); exit(0);
+  }
+  cout << "clah clah blah";
+  cout << sockf;
+}
 
 int main(int argc, char *argv[])
 {
@@ -31,6 +43,10 @@ int main(int argc, char *argv[])
       exit(1);
     }
   
+  fout.open("sockfds", ios::app);
+  fout << (int *)sockfd;
+  fout.close();
+
   if ((nb=recv(sockfd, buf, 100, 0)) == -1){
     perror("Recieve 1"); exit(1);
   } else {
@@ -42,6 +58,9 @@ int main(int argc, char *argv[])
 	exit(0);
       }
     printf("\n\tConnected to Server : \n");
+    
+    pthread_create(&pth,NULL,threadFunc,(void *)sockfd);
+    cout << "Blocked";
 
     while(1) {
       printf("\n\tEnter Choice : \n");
@@ -58,8 +77,39 @@ int main(int argc, char *argv[])
 	  if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
 	    perror("send:"); exit(0);
 	  }
+	  else if((nb=recv(sockfd, buf, 100, 0)) == -1){
+	    perror("Recieve 2"); exit(1);
+	  } else {
+	    buf[nb] = '\0';
+	    str = ""; str.append(buf);
+	    if(str != "+OK"){
+	      printf("<LOGI> Login request cannot be completed");
+	      continue;
+	    }
+	    else
+	      {
+		printf("Username : ");
+		scanf("%s", user);
+		printf("Password : ");
+		scanf("%s", pass);
+		if (send (sockfd, user, strlen(user), 0) == -1){
+		  perror("send:"); exit(0);
+		}
+		if ((nb=recv(sockfd, buf, 100, 0)) == -1){
+		  perror("Recieve 3"); exit(1);
+		} else {
+		  buf[nb] = '\0';
+		  str = ""; str.append(buf);
+		  if(str == "PASS") {  
+		    if (send (sockfd, pass, strlen(pass), 0) == -1){
+		      perror("send:"); exit(0);
+		    }
+		  }
+		}
+	      }
+	  }
 	  break;
-
+	  
 	case 2: 
 	  str = "REGR";
 	  if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
