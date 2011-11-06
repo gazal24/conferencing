@@ -41,7 +41,7 @@ string user, pass;
 int my_port = 0;
 int nb=0; //NUMBYTES
 int conflict=0;
-
+int found=0;
 
 typedef struct{
   char user[10];

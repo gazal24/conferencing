@@ -20,6 +20,12 @@
 using namespace std;
 
 #define MAXDATASIZE 1000 /* max number of bytes we can get at once */
+#define LIST_SIZE 8
+//PROTOTYPE
+void *recvthread(void* arg);
+void prompt();
+int belong_to(string);
+
 
 //SYSTEM
 int sockfd;
@@ -30,14 +36,15 @@ char *HOSTNAME =(char*)malloc(sizeof(char)*50);
 
 //USER
 string str="";
+string command,message;
+int i;
 int nb=0;
 char buf[100];
+char text[500];
 int choice=0;
 char user[10],pass[10];
 ifstream fin;
 ofstream fout;
 pthread_t pth;
 
-typedef struct{
-  
-}conferences;
+std::string command_list[LIST_SIZE] = {"leave", "kick", "topic", "list", "start", "invite", "end", "data"};
