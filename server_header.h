@@ -44,10 +44,7 @@ int nb=0; //NUMBYTES
 int conflict=0;
 int found=0;
 
-typedef struct{
-  char user[10];
-  char pass[10];
-}data;
+FILE *file;
 
 typedef struct{
   int id;
@@ -55,3 +52,11 @@ typedef struct{
   char *topic;
 }conference;
 
+
+typedef struct{
+  char name[10];
+  char pass[10];
+  bool designated;
+}user_info;
+
+user_info userinfo;

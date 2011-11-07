@@ -50,7 +50,6 @@ int main(int argc, char *argv[])
 	  if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1){
 	    perror("send"); exit(1);
 	  }
-
 	  while(1) {
 	    if ((nb=recv(new_fd, buf, MAXDATASIZE, 0)) <= 0) {
 	      perror  ("Recieve 1"); exit(0);
@@ -70,7 +69,8 @@ int main(int argc, char *argv[])
 	      }
 	      buf[nb] = '\0'; str = ""; str.append(buf);
 	      user = str;
-	      fin.close();
+
+	      /*	      fin.close();
 	      fin.open("userinfo.txt");
 
 	      if(fin.is_open()) {
@@ -80,7 +80,20 @@ int main(int argc, char *argv[])
 		  if(line.substr(0, line.find(' ')).compare(user) == 0)
 		    conflict = 1;
 		}
+		}*/
+
+
+	      file = fopen("userinfo.txt", "a+");
+	      if(!file) continue;
+
+	      conflict = 0;
+	      while(!feof(file)) {
+		if(!fread(&userinfo,sizeof(user_info),1,file)) break;
+		if(strcmp(userinfo.name, user.c_str()) == 0)
+		  conflict = 1;
 	      }
+	      fclose(file);
+
 
 	      if(conflict == 1) {
 		str = "ERR";
@@ -101,10 +114,14 @@ int main(int argc, char *argv[])
 		buf[nb] = '\0'; str = ""; str.append(buf);
 		pass = str;
 		cout << "Pass : " << pass;
-		fin.close();
-		fout.open("userinfo.txt", ios::app);
-		fout << user << " " << pass << endl;
-		fout.close();			
+		
+		//STRUCT WRITE
+		file = fopen("userinfo.txt", "a+");
+		sprintf(userinfo.name, "%s", user.c_str());
+		sprintf(userinfo.pass, "%s", pass.c_str());
+		userinfo.designated = 1;
+		fwrite(&userinfo,sizeof(user_info),1,file);
+		fclose(file);
 	      }	
 	      fflush(0);
 	    }//END OF if(str = "REGR")
@@ -134,10 +151,10 @@ int main(int argc, char *argv[])
 	      cout << user << pass;
 	      fflush(0);
 	    
-	      fin.close();
+	      /*fin.close();
 	      fin.open("userinfo.txt");
-
-	      if(fin.is_open()) {
+	      
+	      	      if(fin.is_open()) {
 		found = 0; str = "NOAUTH";
 		while (fin.good() && !fin.eof()) {
 		  getline(fin,line);
@@ -149,6 +166,20 @@ int main(int argc, char *argv[])
 		  }
 		}//END of while(fin)
 	      }
+	      */
+
+	      //STRUCT READ
+	      file = fopen("userinfo.txt", "r");
+
+	      str = "NOAUTH";
+	      while(!feof(file)) {
+		if(!fread(&userinfo,sizeof(user_info),1,file))
+		  break;
+		if(strcmp(userinfo.name, user.c_str()) == 0 && strcmp(userinfo.pass, pass.c_str()) == 0)
+		  str = "AUTH";
+	      }
+
+	      fclose(file);
 
 	      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 		perror("send");
@@ -163,11 +194,13 @@ int main(int argc, char *argv[])
 		perror("send");
 	      cout << "yea i got relay from thread" << endl;
 	      fflush(0);
-	      //fin.open("sockfds");
 	    }//END OF if(str = "RELAY")
+
+
 
 	    if(str == "STAT") {
 	      //CHECK THE GUY IS DESIGNATED OR NOT. refer userinfo.txt OR chk flag in process itself.
+	      
 	      //CHECK IF HE IS FREE OR NOT. refer online_user.txt for this.
 	      //UPDATE HIS CONFERENCE ID IN online_user.txt.
 	      //CREATE A ROOM. create a file <conference_id.txt>
