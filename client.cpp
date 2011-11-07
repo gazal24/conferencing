@@ -116,9 +116,66 @@ int main(int argc, char *argv[])
 	  command = "data";
 	  message = str;
 	}
-	if(belong_to(command) == 0)
+	if(belong_to(command) == 0) {
 	  cout << "invalid command : " << command;
-	if (send (sockfd, text, strlen(text), 0) == -1){
+	  continue;
+	}
+
+	//{"start", "topic", "list", "invite", "data", "kick", "leave", "end"};
+	
+	if(command == "start") {
+	  str = "STAT";
+	  str.append(" ");
+	  str.append(message);
+	}
+
+	if(command == "topic") {
+	  str = "TOPI";
+	  str.append(" ");
+	  str.append(message);
+	}
+
+	if(command == "users") {
+	  str = "USER";
+	}
+
+	if(command == "info") {
+	  str = "INFO";
+	}
+
+	if(command == "invite") {
+	  str = "INVI";
+	  str.append(" ");
+	  str.append(message);
+	}
+
+	if(command == "accept") {
+	  str = "ACPT";
+	  str.append(" ");
+	  str.append(message);
+	}
+
+	if(command == "data") {
+	  str = "DATA";
+	  str.append(" ");
+	  str.append(message);
+	}
+
+	if(command == "kick") {
+	  str = "KICK";
+	  str.append(" ");
+	  str.append(message);
+	}
+
+	if(command == "leave") {
+	  str = "LEAV";
+	}
+
+	if(command == "end") {
+	  str = "ENDC";
+	}
+
+	if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
 	  perror("send:"); exit(0);
 	}
 	

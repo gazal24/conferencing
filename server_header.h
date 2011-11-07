@@ -37,6 +37,7 @@ char buf[100];
 string str="";
 string line;
 string user, pass;
+string recv_str;
 
 int my_port = 0;
 int nb=0; //NUMBYTES

@@ -20,7 +20,7 @@
 using namespace std;
 
 #define MAXDATASIZE 1000 /* max number of bytes we can get at once */
-#define LIST_SIZE 8
+#define LIST_SIZE 10
 //PROTOTYPE
 void *recvthread(void* arg);
 void prompt();
@@ -47,4 +47,5 @@ ifstream fin;
 ofstream fout;
 pthread_t pth;
 
-std::string command_list[LIST_SIZE] = {"leave", "kick", "topic", "list", "start", "invite", "end", "data"};
+std::string command_list[LIST_SIZE] = {"start", "topic", "users", "invite", "data", "kick", "leave", "end", "info", "accept"};
+

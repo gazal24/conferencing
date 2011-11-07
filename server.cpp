@@ -56,8 +56,10 @@ int main(int argc, char *argv[])
 	      perror  ("Recieve 1"); exit(0);
 	    }
 
-	    buf[nb] = '\0'; str = ""; str.append(buf);
-	  
+	    buf[nb] = '\0'; recv_str = ""; recv_str.append(buf);
+	    str = recv_str.substr(0,4);
+	    cout << recv_str << ":" << str;
+	    
 	    if(str == "REGR") {
 	      str = "+OK";
 	      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1){
@@ -150,9 +152,12 @@ int main(int argc, char *argv[])
 
 	      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 		perror("send");
+
+	      //MAKE HIS ENTRY IN online_user.txt. add username new_fd conference_id=NULL
+
 	    }//END OF if(str = "LOGI")
 
-	    if(str ==  "RELAY") {
+	    if(str ==  "RELA") {
 	      str = "and i got this reply";
 	      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 		perror("send");
@@ -161,6 +166,48 @@ int main(int argc, char *argv[])
 	      //fin.open("sockfds");
 	    }//END OF if(str = "RELAY")
 
+	    if(str == "STAT") {
+	      //CHECK THE GUY IS DESIGNATED OR NOT. refer userinfo.txt OR chk flag in process itself.
+	      //CHECK IF HE IS FREE OR NOT. refer online_user.txt for this.
+	      //UPDATE HIS CONFERENCE ID IN online_user.txt.
+	      //CREATE A ROOM. create a file <conference_id.txt>
+	      //ADD THE TOPIC OF MESSAGE TO THE TOP OF <conference_id.txt>
+	      //ADD HIM TO THE SECOND LINE OF <conference_id.txt>.
+	      //SEND THE LIST OF ONLINE BUDDIES WHO ARE NOT BUSY. refer online_user.txt.
+	    }
+
+	    if(str == "TOPI") {
+	      //DISPLAY THE TOPIC. go to online_user.txt and fetch conference_id. go to this conference_id.txt and display the topic.
+	    }
+	    
+	    if(str == "USER") {
+	      //LIST ALL USER WHO ARE FREE. go to online_user.txt and check if conference_id is NULL... display him. 
+	    }
+	    if(str == "INFO") {
+	      //GO TO online_user.txt and fetch conference_id. go to conference_id.txt and display all the details.
+	    }
+	    if(str == "INVI") {
+	      //FOR each username, go to online_user.txt. check if he is free and send him a invitation.
+	    }
+	    if(str == "ACPT") {
+	      //go to online_user.txt and check if he is free, update his conference_id. go to conference_id.txt and add him at the bottom. if he is not free, notify him to /leave first and then accept other request.
+	    }
+	    if(str == "DATA") {
+	      //go to online_user.txt, fetch the conference_id. go to conference_id.txt.. fetch all other members and relay message to them.
+	    }
+	    if(str == "KICK") {
+	      //go to conference_id.txt. check if he is the Owner then check if he is in conference list then remove his name from conference_id.txt and notify him. Then go to online_user.txt and change his conference_id to NULL.
+	    }
+	    if(str == "LEAV") {
+	      //go to conference_id.txt and remove him from the list. go to online_user.txt and change his conference_id to NULL. If this person is designated user... inform all other members and end the room.
+	    }
+	    if(str == "ENDC") {
+	      //go to conference_id.txt... notify each member in the list and remove that file.
+	    }
+	    if(str == "LOGO") {
+	      //go to online_user.txt get his conference_id... remove him from conference. and then remove him from online_user.txt also.
+	    }
+	    fflush(0);
 	  }//END OF while(1)	  
 	}//END OF fork()
     }//END OF while()
