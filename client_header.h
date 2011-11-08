@@ -39,6 +39,7 @@ string str="";
 string command,message;
 int i;
 int nb=0;
+int prompt_flag = 1;
 char buf[100];
 char text[500];
 int choice=0;

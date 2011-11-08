@@ -29,9 +29,13 @@ struct sockaddr_in their_addr; /* client's address info */
 int sin_size;
 
 
+
+//PROTOTYPES
+void get_info();
+void update();
+
+
 // USER
-ifstream fin;
-ofstream fout;
 
 char buf[100];
 string str="";
@@ -43,14 +47,19 @@ int my_port = 0;
 int nb=0; //NUMBYTES
 int conflict=0;
 int found=0;
+int userfree;
+int next_conference_id = 1;
+
 
 FILE *file;
 
 typedef struct{
   int id;
-  int *members;
-  char *topic;
-}conference;
+  char admin[10];
+  char topic[100];
+}conference_room;
+
+conference_room conference, conference_temp;
 
 
 typedef struct{
@@ -60,3 +69,12 @@ typedef struct{
 }user_info;
 
 user_info userinfo;
+
+
+typedef struct{
+  char name[10];
+  int new_fd;
+  int conf_id;
+}online_user;
+
+online_user onlineuser, onlineuser_temp;

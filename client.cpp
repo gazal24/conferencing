@@ -102,9 +102,11 @@ int main(int argc, char *argv[])
       pthread_create(&pth,NULL,recvthread,(void *)sockfd);
       cout <<  "Login Successful" << endl;
       getline(cin, str);
-
       while(1){
-	prompt();
+	
+	if(prompt_flag == 1)
+	  prompt();
+	prompt_flag=0;
 	//	cin >> str;
 	getline(cin, str);
 	//str = ""; str.append(text);
@@ -112,17 +114,20 @@ int main(int argc, char *argv[])
 	  command = str.substr(1, str.find(' ')-1);
 	  message = str.substr(str.find(' ')+1);
 	}
+	else if(str == "") {
+	  continue;
+	}
 	else {
 	  command = "data";
 	  message = str;
 	}
 	if(belong_to(command) == 0) {
 	  cout << "invalid command : " << command;
+	  prompt_flag = 1;
 	  continue;
 	}
 
 	//{"start", "topic", "list", "invite", "data", "kick", "leave", "end"};
-	
 	if(command == "start") {
 	  str = "STAT";
 	  str.append(" ");
@@ -159,6 +164,7 @@ int main(int argc, char *argv[])
 	  str = "DATA";
 	  str.append(" ");
 	  str.append(message);
+	  prompt_flag = 1;
 	}
 
 	if(command == "kick") {
@@ -198,7 +204,7 @@ int main(int argc, char *argv[])
 	  continue;
       }
       cout << endl;
-      cout << "<Username and Password shoul contain only alphabetical characters not more than 10>" << endl;
+      cout << "<Username and Password should contain only alphabetical characters not more than 10>" << endl;
       printf("Username : ");
       scanf("%s", user);
       printf("Password : ");
@@ -245,6 +251,7 @@ void *recvthread(void* arg)
     } 
     buf[nb] = '\0'; str = ""; str.append(buf);
     cout << endl << str;
+    str = "";
     prompt();
   }
 }
