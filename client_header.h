@@ -15,7 +15,7 @@
 #include <fstream>
 #include <ctype.h>
 #include <pthread.h>
-
+#include <unistd.h>
 
 using namespace std;
 
@@ -47,6 +47,8 @@ char user[10],pass[10];
 ifstream fin;
 ofstream fout;
 pthread_t pth;
+unsigned int usec = 100000;
+
 
 std::string command_list[LIST_SIZE] = {"start", "topic", "users", "invite", "data", "kick", "leave", "end", "info", "accept"};
 

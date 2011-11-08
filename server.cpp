@@ -268,7 +268,21 @@ int main(int argc, char *argv[])
 	    }
 	    
 	    if(str == "USER") {
-	      
+	      str = "Available Users : \n";
+	      file = fopen("onlineuser.txt", "r+");
+	      while(!feof(file)) {
+		if(!fread(&onlineuser_temp,sizeof(online_user),1,file))
+		  break;
+		cout << " id : " << onlineuser_temp.conf_id;
+		if(onlineuser_temp.conf_id == 0)
+		  {
+		    str.append(onlineuser_temp.name);
+		    str.append(", ");
+		  }
+	      }
+	      fclose(file);
+	      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
+		perror("send");
 	      //LIST ALL USER WHO ARE FREE. go to online_user.txt and check if conference_id is NULL... display him. 
 	    }
 	    if(str == "INFO") {

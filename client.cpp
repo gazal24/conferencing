@@ -102,8 +102,10 @@ int main(int argc, char *argv[])
       pthread_create(&pth,NULL,recvthread,(void *)sockfd);
       cout <<  "Login Successful" << endl;
       getline(cin, str);
+
       while(1){
-	
+
+	usleep(usec);
 	if(prompt_flag == 1)
 	  prompt();
 	prompt_flag=0;

@@ -53,14 +53,6 @@ int next_conference_id = 1;
 
 FILE *file;
 
-typedef struct{
-  int id;
-  char admin[10];
-  char topic[100];
-}conference_room;
-
-conference_room conference, conference_temp;
-
 
 typedef struct{
   char name[10];
@@ -71,10 +63,27 @@ typedef struct{
 user_info userinfo;
 
 
+
 typedef struct{
   char name[10];
   int new_fd;
   int conf_id;
 }online_user;
 
-online_user onlineuser, onlineuser_temp;
+online_user onlineuser;
+online_user onlineuser_temp; // used for all file READ operations
+
+
+
+typedef struct{
+  int id;
+  char admin[10];
+  char topic[100];
+}conference_room;
+
+conference_room conference;
+conference_room conference_temp; // used for all file READ operations
+
+
+
+
