@@ -332,7 +332,7 @@ void update()
       break;
   }
   fseek(file, (-1*sizeof(online_user)),SEEK_CUR);
-  fwrite(&onlineuser_temp,sizeof(online_user),1,file);
+  fwrite(&onlineuser,sizeof(online_user),1,file);
   fclose(file);
   //update online_user.conf_id in file onlineuser.txt. use online_user.name to check which record.
 }
