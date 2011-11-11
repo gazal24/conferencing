@@ -31,9 +31,6 @@ int main(int argc, char *argv[])
       exit(1);
     }
   
-  fout.open("sockfds", ios::app);
-  fout << (int *)sockfd;
-  fout.close();
 
   if ((nb=recv(sockfd, buf, 100, 0)) == -1){
     perror("Recieve 1"); exit(1);
@@ -106,12 +103,13 @@ int main(int argc, char *argv[])
       while(1){
 
 	usleep(usec);
+
 	if(prompt_flag == 1)
 	  prompt();
 	prompt_flag=0;
-	//	cin >> str;
+
 	getline(cin, str);
-	//str = ""; str.append(text);
+
 	if(str[0] == '/') {
 	  command = str.substr(1, str.find(' ')-1);
 	  message = str.substr(str.find(' ')+1);
@@ -119,10 +117,37 @@ int main(int argc, char *argv[])
 	else if(str == "") {
 	  continue;
 	}
+	else if(request_flag == 1){
+	  if(str == "y" or str == "Y")
+	    { str = "ACPT"; 
+	      sprintf(temp, " %d ", conf_id);
+	      str.append(temp);
+	      str.append("YES");	      
+	      request_flag = 0;
+	    }
+	  // Guess we don't need to send a NO Notification :-//
+	  if(str == "n" or str == "N")
+	    {
+	      str = "ACPT"; 
+	      sprintf(temp, " %d ", conf_id);
+	      str.append(temp);
+	      str.append("NO");	      
+	      request_flag = 0;
+	    }
+	  if(request_flag == 0) { //means it was either Y or N.
+	    if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
+	      perror("send:"); exit(0);
+	    }
+	    prompt_flag = 1;
+	  }
+	  else cout << "Try again (y/n)?"; 
+	  continue;
+	}
 	else {
 	  command = "data";
 	  message = str;
 	}
+
 	if(belong_to(command) == 0) {
 	  cout << "invalid command : " << command;
 	  prompt_flag = 1;
@@ -181,6 +206,10 @@ int main(int argc, char *argv[])
 
 	if(command == "end") {
 	  str = "ENDC";
+	}
+
+	if(command == "print") {
+	  str = "NULL";
 	}
 
 	if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
@@ -252,6 +281,15 @@ void *recvthread(void* arg)
       perror("Recieve 3"); exit(1);
     } 
     buf[nb] = '\0'; str = ""; str.append(buf);
+    if(str == "+OK") {prompt(); continue;}
+    cout << "substr = " << str.substr(0, str.find(' ')-1);
+    if(str.substr(0, str.find(' ')) == "REQU") {
+      cout << "I got an invite\n";
+      found = str.find("CONF");
+      cout << "found at " << str.substr(found+5, str.length()-found-1);
+      conf_id = atoi(str.substr(found+5, str.length()-found-1).c_str());
+      request_flag = 1;
+    }
     cout << endl << str;
     str = "";
     prompt();
@@ -269,8 +307,8 @@ int belong_to(string var)
 {
   //  cout << "received:" << var << ":" << endl;
   for(i=0; i<LIST_SIZE; i++)
-      if(command_list[i].compare(var) == 0)
-	return 1;
+    if(command_list[i].compare(var) == 0)
+      return 1;
   return 0;
 }
 

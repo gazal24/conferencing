@@ -1,5 +1,6 @@
-client		
-server	
+client
+server
 userinfo.txt
-conference.txt	
+conference.txt
 onlineuser.txt
+nextConfId.txt
