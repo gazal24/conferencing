@@ -71,7 +71,6 @@ typedef struct{
 user_info userinfo;
 
 
-
 typedef struct{
   char name[10];
   int new_fd;
