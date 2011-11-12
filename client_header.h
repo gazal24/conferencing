@@ -21,6 +21,8 @@
 using namespace std;
 
 #define MAXDATASIZE 1000 /* max number of bytes we can get at once */
+#define PASSPHRASE "admin12"
+
 //PROTOTYPE
 void *recvthread(void* arg);
 void prompt();
@@ -42,6 +44,7 @@ char buf[100];
 char user[10],pass[10];
 char temp[10];
 char *ptr;
+char designated;
 
 int i;
 int nb=0;
@@ -50,6 +53,7 @@ int request_flag = 0;
 int conf_id = 0;
 int choice=0;
 int found=0;
+
 
 pthread_t pth;
 unsigned int usec = 100000;

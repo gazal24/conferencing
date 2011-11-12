@@ -159,23 +159,6 @@ int main(int argc, char *argv[])
 	      cout << user << pass;
 	      fflush(0);
 	    
-	      /*fin.close();
-	      fin.open("userinfo.txt");
-	      
-	      	      if(fin.is_open()) {
-		found = 0; str = "NOAUTH";
-		while (fin.good() && !fin.eof()) {
-		  getline(fin,line);
-		  found=line.find(' ');
-		  if(line.substr(0, found).compare(user) == 0 && line.substr(found+1, line.find(' ', found+1)).compare(pass) == 0) {
-		    //MATCH
-		    str = "AUTH";
-		    break;
-		  }
-		}//END of while(fin)
-	      }
-	      */
-
 	      //STRUCT READ
 	      str = "NOAUTH";
 
@@ -204,7 +187,6 @@ int main(int argc, char *argv[])
 		fwrite(&onlineuser,sizeof(online_user),1,file);
 		fclose(file);
 	      }
-
 	    }//END OF if(str = "LOGI")
 
 	    if(str ==  "RELA") {
@@ -275,8 +257,9 @@ int main(int argc, char *argv[])
 
 	    
 	    if(str == "USER") {
-	      str = "Available Users : \n";
+	      str = "Available Users : ";
 	      file = fopen("onlineuser.txt", "r+");
+	      found = 0;
 	      while(!feof(file)) {
 		if(!fread(&onlineuser_temp,sizeof(online_user),1,file))
 		  break;
@@ -285,9 +268,13 @@ int main(int argc, char *argv[])
 		  {
 		    str.append(onlineuser_temp.name);
 		    str.append(", ");
+		    found = 1;
 		  }
 	      }
 	      fclose(file);
+	      if(found) {
+		str[str.length()-2] = '.';
+	      }
 	      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 		perror("send");
 	      //LIST ALL USER WHO ARE FREE. go to online_user.txt and check if conference_id is NULL... display him. 
@@ -381,6 +368,12 @@ int main(int argc, char *argv[])
 	      //go to online_user.txt and check if he is free, update his conference_id. go to conference_id.txt and add him at the bottom. if he is not free, notify him to /leave first and then accept other request.
 	    }
 	    if(str == "DATA") {
+	      message = recv_str.substr(recv_str.find(' ')+1, recv_str.length()-1);
+	      cout << "\nMessage is : " << message <<endl;
+	      str = "";
+	      str.append(onlineuser.name);
+	      str.append("> ");
+	      str.append(message);
 	      if(onlineuser.conf_id == 0)
 		str = "You are not in any conference. Msg not sent.";
 	      else {
@@ -388,8 +381,11 @@ int main(int argc, char *argv[])
 		while(!feof(file)) {
 		  if(!fread(&onlineuser_temp,sizeof(online_user),1,file))
 		    break;
-		  if(onlineuser_temp.conf_id == onlineuser.conf_id)
+		  if(onlineuser_temp.conf_id == onlineuser.conf_id && strcmp(onlineuser_temp.name, onlineuser.name) !=  0) {
 		    cout << onlineuser_temp.name;
+		    if (send(onlineuser_temp.new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
+		      perror("send");
+		  }
 		}
 		fclose(file);
 	      }
@@ -397,8 +393,16 @@ int main(int argc, char *argv[])
 	    }
 	    
 	    if(str == "KICK") {
+	      str = "Some error";
+	      if(userinfo.designated == 0)
+		str = "You are not designated to invite.";
+	      else if(onlineuser.conf_id == 0)
+		str = "You are not in any chat.";
+	      else { 
+	      }
 	      //go to conference_id.txt. check if he is the Owner then check if he is in conference list then remove his name from conference_id.txt and notify him. Then go to online_user.txt and change his conference_id to NULL.
 	    }
+
 	    if(str == "LEAV") {
 	      cout << "yeah i ma here at leave \n";
 	      fflush(0);

@@ -238,8 +238,6 @@ int main(int argc, char *argv[])
       cout << "<Username and Password should contain only alphabetical characters not more than 10>" << endl;
       printf("Username : ");
       scanf("%s", user);
-      printf("Password : ");
-      scanf("%s", pass);
       if (send (sockfd, user, strlen(user), 0) == -1){
 	perror("send:"); exit(0);
       }
@@ -252,6 +250,11 @@ int main(int argc, char *argv[])
 	continue;
       }
       if(str == "PASS") {
+	printf("Password : ");
+	scanf("%s", pass);
+	printf("Are you designated user(y/n) : ");
+	scanf("%c", &designated);
+	cout << designated;
 	if (send (sockfd, pass, strlen(pass), 0) == -1) {
 	  perror("send:"); exit(0);
 	}
@@ -282,15 +285,13 @@ void *recvthread(void* arg)
     } 
     buf[nb] = '\0'; str = ""; str.append(buf);
     if(str == "+OK") {prompt(); continue;}
-    cout << "substr = " << str.substr(0, str.find(' ')-1);
     if(str.substr(0, str.find(' ')) == "REQU") {
-      cout << "I got an invite\n";
       found = str.find("CONF");
-      cout << "found at " << str.substr(found+5, str.length()-found-1);
       conf_id = atoi(str.substr(found+5, str.length()-found-1).c_str());
       request_flag = 1;
     }
-    cout << endl << str;
+    //    cout << endl << str;
+    cout << str;
     str = "";
     prompt();
   }
