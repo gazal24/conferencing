@@ -134,11 +134,11 @@ int main(int argc, char *argv[])
 	      str.append("NO");	      
 	      request_flag = 0;
 	    }
-	  if(request_flag == 0) { //means it was either Y or N.
+	  if(request_flag == 0) { //means it was either of Y and N.
 	    if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
 	      perror("send:"); exit(0);
 	    }
-	    prompt_flag = 1;
+	    //prompt_flag = 1;
 	  }
 	  else cout << "Try again (y/n)?"; 
 	  continue;
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 	}
 
 	if(belong_to(command) == 0) {
-	  cout << "invalid command : " << command;
+	  cout << "invalid command : " << command << endl;
 	  prompt_flag = 1;
 	  continue;
 	}
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
 	}
 
 	if(command == "print") {
-	  str = "NULL";
+	  str = "PRIN";
 	}
 
 	if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
@@ -290,8 +290,7 @@ void *recvthread(void* arg)
       conf_id = atoi(str.substr(found+5, str.length()-found-1).c_str());
       request_flag = 1;
     }
-    //    cout << endl << str;
-    cout << str;
+    cout << endl << str << endl;
     str = "";
     prompt();
   }
@@ -299,14 +298,13 @@ void *recvthread(void* arg)
 
 void prompt()
 {
-  cout << endl << user << ">";
-  fflush(0);
+  cout << user << ">";
+  fflush(stdout);
   return;
 }
 
 int belong_to(string var)
 {
-  //  cout << "received:" << var << ":" << endl;
   for(i=0; i<LIST_SIZE; i++)
     if(command_list[i].compare(var) == 0)
       return 1;

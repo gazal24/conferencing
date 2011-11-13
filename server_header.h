@@ -14,6 +14,7 @@
 #include <fstream>
 #include <ctype.h>
 #include <sstream>
+#include <pthread.h>
 
 
 using namespace std;
@@ -24,43 +25,19 @@ using namespace std;
 
 
 // SYSTEM
-int sockfd, new_fd; /* listen on sock_fd,
+int sockfd; /* listen on sock_fd,
 		       new connection on new_fd */
 struct sockaddr_in my_addr; /* my address information */
 struct sockaddr_in their_addr; /* client's address info */
 int sin_size;
-
-
-
-//PROTOTYPES
-void get_info();
-void update_onlineusers();
-void update_conferences();
-int get_next_conference_id();
-
-
-
-// USER
-
-char buf[100];
-char temp[100];
-char *ptr;
-string str="";
-string line;
-string user, pass;
-string recv_str;
-string message;
-string str_1;
-
 int my_port = 0;
-int nb=0; //NUMBYTES
-int conflict=0;
-int found=0;
-int userfree;
-int next_conference_id = 1;
-int invite_flag = 0;
 
-FILE *file;
+
+
+//USER
+
+FILE *file_1;
+pthread_t pth;
 
 typedef struct{
   char name[10];
@@ -68,19 +45,11 @@ typedef struct{
   bool designated;
 }user_info;
 
-user_info userinfo;
-
-
 typedef struct{
   char name[10];
   int new_fd;
   int conf_id;
 }online_user;
-
-online_user onlineuser;
-online_user onlineuser_temp; // used for all file READ operations
-
-
 
 typedef struct{
   int id;
@@ -88,14 +57,23 @@ typedef struct{
   char topic[100];
 }conference_room;
 
-conference_room conference;
-conference_room conference_temp; // used for all file READ operations
-
-
 typedef struct{
   int id;
 }next_Conf_Id;
 
 next_Conf_Id nextConfId;
 
+struct socket_info{
+  int fd;
+};
+
+struct socket_info socketinfo;
+
+
+//PROTOTYPES
+void get_info(user_info, online_user);
+void update_onlineusers(user_info, online_user);
+void update_conferences();
+int get_next_conference_id();
+void *main_code(void*);
 
