@@ -493,6 +493,20 @@ void *main_code(void* socketinfo) {
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 	perror("send");
     }
+    if(str == "HELP") {
+      str = "";
+      str.append("COMMAND \t- DESCRIPTION");
+      str.append("\n start  \t- begin a conference.");
+      str.append("\n users  \t- see online free users.");
+      str.append("\n invite \t- send join request to online free user.");
+      str.append("\n topic  \t- view topic of conference.");
+      str.append("\n leave  \t- leave the conference.");
+      str.append("\n logout \t- logout.");
+      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
+	perror("send");
+      //go to online_user.txt get his conference_id... remove him from conference. and then remove him from online_user.txt also.
+    }
+
     fflush(0);
   }//END OF while(1)	  
 	  

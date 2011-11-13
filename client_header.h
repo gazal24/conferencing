@@ -40,7 +40,7 @@ char *HOSTNAME =(char*)malloc(sizeof(char)*50);
 string str="";
 string command,message;
 
-char buf[100];
+char buf[500];
 char user[10],pass[10];
 char temp[10];
 char *ptr;
@@ -58,6 +58,6 @@ int found=0;
 pthread_t pth;
 unsigned int usec = 100000;
 
-#define LIST_SIZE 11
-std::string command_list[LIST_SIZE] = {"start", "topic", "users", "invite", "data", "kick", "leave", "end", "info", "accept", "print"};
+#define LIST_SIZE 12
+std::string command_list[LIST_SIZE] = {"start", "topic", "users", "invite", "data", "kick", "leave", "end", "info", "accept", "print", "help"};
 

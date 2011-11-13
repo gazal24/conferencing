@@ -23,7 +23,6 @@ using namespace std;
 #define MAXDATASIZE 1000
 #define BACKLOG 10 /* number of pending connections */
 
-
 // SYSTEM
 int sockfd; /* listen on sock_fd,
 		       new connection on new_fd */
@@ -76,4 +75,3 @@ void update_onlineusers(user_info, online_user);
 void update_conferences();
 int get_next_conference_id();
 void *main_code(void*);
-

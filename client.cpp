@@ -212,6 +212,10 @@ int main(int argc, char *argv[])
 	  str = "PRIN";
 	}
 
+	if(command == "help") {
+	  str = "HELP";
+	}
+
 	if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
 	  perror("send:"); exit(0);
 	}
@@ -280,7 +284,7 @@ void *recvthread(void* arg)
   //  int sockf = *((int *)arg);
   //  int sockf = (long)arg;
   while(1){
-    if ((nb=recv(sockfd, buf, 100, 0)) == -1){
+    if ((nb=recv(sockfd, buf, 500, 0)) == -1){
       perror("Recieve 3"); exit(1);
     } 
     buf[nb] = '\0'; str = ""; str.append(buf);
