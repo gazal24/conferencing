@@ -70,7 +70,7 @@ void *main_code(void* socketinfo) {
   string message;
   string str_1;
 
-  int nb=0; //NUMBYTES                                                                                                                                         
+  int nb=0; //NUMBYTES
   int conflict=0;
   int found=0;
   int invite_flag = 0;
@@ -107,7 +107,6 @@ void *main_code(void* socketinfo) {
 
     buf[nb] = '\0'; recv_str = ""; recv_str.append(buf);
     str = recv_str.substr(0,4);
-    cout << endl << "RECV : " << recv_str;
 	    
     if(str == "REGR") {
       str = "+OK";
@@ -119,19 +118,6 @@ void *main_code(void* socketinfo) {
       }
       buf[nb] = '\0'; str = ""; str.append(buf);
       user = str;
-
-      /*	      fin.close();
-		      fin.open("userinfo.txt");
-
-		      if(fin.is_open()) {
-		      conflict = 0;
-		      while (fin.good() && !fin.eof()) {
-		      getline(fin,line);
-		      if(line.substr(0, line.find(' ')).compare(user) == 0)
-		      conflict = 1;
-		      }
-		      }*/
-
 
       file = fopen("userinfo.txt", "a+");
       if(!file) continue;
@@ -164,12 +150,19 @@ void *main_code(void* socketinfo) {
 	buf[nb] = '\0'; str = ""; str.append(buf);
 	pass = str;
 	cout << "Pass : " << pass;
-		
+
+	if(pass[pass.length()-1] == 'y')
+	  userinfo.designated = 1;
+	else
+	  userinfo.designated = 0;
+	
+	pass = pass.substr(0, pass.length()-1);
+	//	cout << "\nnew_pass"  << pass;
+	//	cout << "designated : " << userinfo.designated;
 	//STRUCT WRITE
 	file = fopen("userinfo.txt", "a+");
 	sprintf(userinfo.name, "%s", user.c_str());
 	sprintf(userinfo.pass, "%s", pass.c_str());
-	userinfo.designated = 1;
 	fwrite(&userinfo,sizeof(user_info),1,file);
 	fclose(file);
       }	
@@ -297,7 +290,6 @@ void *main_code(void* socketinfo) {
     }
 
 
-	    
     if(str == "USER") {
       str = "Available Users : ";
       file = fopen("onlineuser.txt", "r+");
@@ -463,13 +455,14 @@ void *main_code(void* socketinfo) {
       //go to conference_id.txt and remove him from the list. go to online_user.txt and change his conference_id to NULL. If this person is designated user... inform all other members and end the room.
     }
     if(str == "ENDC") {
+      
       //go to conference_id.txt... notify each member in the list and remove that file.
     }
     if(str == "LOGO") {
       //go to online_user.txt get his conference_id... remove him from conference. and then remove him from online_user.txt also.
     }
     if(str == "PRIN") {
-      cout << "I am here";
+      cout << "\nONLINE USERS DETAILS";
       fflush(0);
       file = fopen("onlineuser.txt", "r+");
       while(!feof(file)) {
@@ -478,7 +471,7 @@ void *main_code(void* socketinfo) {
 	cout << "\nName : " << onlineuser_temp.name << " New_fd : " << onlineuser_temp.new_fd << " conf_id : " << onlineuser_temp.conf_id;
       }
       fclose(file);
-      cout << "\nNow I am here";
+      cout << "\nCONFERENCE DETAILS";
       fflush(0);
       file = fopen("conference.txt", "a+");
       while(!feof(file)) {
@@ -487,12 +480,13 @@ void *main_code(void* socketinfo) {
 	cout << "\nAdmin : " << conference_temp.admin << " id : " << conference_temp.id << " topic : " << conference_temp.topic;
       }
       fclose(file);
-      cout << "\nAnd Now I am here";
+      cout << "\nEND OF DETAILS";
       fflush(0);
       str = "+OK";
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 	perror("send");
     }
+
     if(str == "HELP") {
       str = "";
       str.append("COMMAND \t- DESCRIPTION");

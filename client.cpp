@@ -97,7 +97,8 @@ int main(int argc, char *argv[])
       }
       
       pthread_create(&pth,NULL,recvthread,(void *)sockfd);
-      cout <<  "Login Successful" << endl;
+      cout <<  "\n\t\tLogin Successful" << endl;
+      cout <<  "\t\t(Type  /help  to get list of commands)" << endl;
       getline(cin, str);
 
       while(1){
@@ -181,12 +182,6 @@ int main(int argc, char *argv[])
 	  str.append(message);
 	}
 
-	if(command == "accept") {
-	  str = "ACPT";
-	  str.append(" ");
-	  str.append(message);
-	}
-
 	if(command == "data") {
 	  str = "DATA";
 	  str.append(" ");
@@ -256,10 +251,31 @@ int main(int argc, char *argv[])
       if(str == "PASS") {
 	printf("Password : ");
 	scanf("%s", pass);
-	printf("Are you designated user(y/n) : ");
-	scanf("%c", &designated);
-	cout << designated;
-	if (send (sockfd, pass, strlen(pass), 0) == -1) {
+	fflush(stdin);
+	temp_flag = 0;
+	do {
+	  printf("Are you a designated user(y/n) : ");
+	  scanf("%s", designated);
+	  if(strcmp(designated, "y") == 0) {
+	    printf("Enter passphrase : ");
+	    scanf("%s", temp);
+	    if(strcmp(temp, PASSPHRASE) == 0)
+	      temp_flag = 1;
+	    else {
+	      cout << "Wrong Passphrase" << endl;
+	    }
+	  }
+	  else if(strcmp(designated, "n") == 0) {
+	    temp_flag = 1;
+	  }
+	}while(!temp_flag);
+	
+	//	cout << designated;
+	str = "";
+	str.append(pass);
+	str.append(designated);
+	//	cout << "str : " << str;
+	if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
 	  perror("send:"); exit(0);
 	}
       }

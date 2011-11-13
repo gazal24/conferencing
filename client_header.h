@@ -44,7 +44,7 @@ char buf[500];
 char user[10],pass[10];
 char temp[10];
 char *ptr;
-char designated;
+char designated[1];
 
 int i;
 int nb=0;
@@ -53,11 +53,11 @@ int request_flag = 0;
 int conf_id = 0;
 int choice=0;
 int found=0;
-
+int temp_flag;
 
 pthread_t pth;
 unsigned int usec = 100000;
 
 #define LIST_SIZE 12
-std::string command_list[LIST_SIZE] = {"start", "topic", "users", "invite", "data", "kick", "leave", "end", "info", "accept", "print", "help"};
+std::string command_list[LIST_SIZE] = {"start", "topic", "users", "invite", "data", "kick", "leave", "end", "info", "print", "help", "logout"};
 
