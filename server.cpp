@@ -76,7 +76,7 @@ void *main_code(void* socketinfo) {
   int invite_flag = 0;
 
   FILE *file;
-
+  FILE *file_temp;
 
   user_info userinfo;
 
@@ -454,13 +454,36 @@ void *main_code(void* socketinfo) {
       //TODO : NOTIFY ALL OTHER USERS.
       //go to conference_id.txt and remove him from the list. go to online_user.txt and change his conference_id to NULL. If this person is designated user... inform all other members and end the room.
     }
+
+
     if(str == "ENDC") {
       
       //go to conference_id.txt... notify each member in the list and remove that file.
     }
+
+
     if(str == "LOGO") {
       //go to online_user.txt get his conference_id... remove him from conference. and then remove him from online_user.txt also.
+      file = fopen("onlineuser.txt", "r");
+      file_temp = fopen("onlineuser_temp.txt", "w");
+
+      while(!feof(file)) {
+	if(!fread(&onlineuser_temp,sizeof(online_user),1,file))
+	  break;
+	if(strcmp(onlineuser_temp.name, onlineuser.name) != 0)
+	  fwrite(&onlineuser_temp,sizeof(online_user),1,file_temp);
+      }
+      fclose(file);
+      fclose(file_temp);
+      remove("onlineuser.txt");
+      rename("onlineuser_temp.txt", "onlineuser.txt");
+      str = "You logged out successfully";
+      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
+	perror("send");
+      return 0;
     }
+
+
     if(str == "PRIN") {
       cout << "\nONLINE USERS DETAILS";
       fflush(0);

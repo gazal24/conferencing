@@ -211,6 +211,10 @@ int main(int argc, char *argv[])
 	  str = "HELP";
 	}
 
+	if(command == "logout") {
+	  str = "LOGO";
+	}
+
 	if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
 	  perror("send:"); exit(0);
 	}
