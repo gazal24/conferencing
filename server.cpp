@@ -290,9 +290,9 @@ void *main_code(void* socketinfo) {
 
 
     if(str == "USER") {
-      str = "Available Users : ";
       file = fopen("onlineuser.txt", "r+");
       found = 0;
+      str = "";
       while(!feof(file)) {
 	if(!fread(&onlineuser_temp,sizeof(online_user),1,file))
 	  break;
@@ -307,14 +307,22 @@ void *main_code(void* socketinfo) {
       fclose(file);
       if(found) {
 	str[str.length()-2] = '.';
+	str = "Idle Users : " + str;
+      }
+      else {
+	str = "server> No idle user found.";
       }
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 	perror("send");
       //LIST ALL USER WHO ARE FREE. go to online_user.txt and check if conference_id is NULL... display him. 
     }
+
+
     if(str == "INFO") {
       //GO TO online_user.txt and fetch conference_id. go to conference_id.txt and display all the details.
     }
+
+
     if(str == "INVI") {
       message = recv_str.substr(recv_str.find(' ')+1, recv_str.length()-1);
       invite_flag = 0;
@@ -324,7 +332,8 @@ void *main_code(void* socketinfo) {
       else if(onlineuser.conf_id == 0)
 	str = "You are not in any chat.";
       else { //espp
-	file = fopen("conference.txt", "a+");
+	file = fopen("conference.txt", "r");
+	found = 0;
 	while(!feof(file)) {
 	  if(!fread(&conference_temp,sizeof(conference_room),1,file))
 	    break;
@@ -357,8 +366,8 @@ void *main_code(void* socketinfo) {
 	      str = "server> User not found";
 	    }
 	  }
+	  fclose(file);
 	}
-	fclose(file);
 	//	cout << "\nstr_1 : " << str_1;
 	//	cout << "\nstr : " << str;
 	//	cout << "\ninvite_flag : " << invite_flag << endl;
@@ -380,6 +389,8 @@ void *main_code(void* socketinfo) {
       }	      
       //FOR each username, go to online_user.txt. check if he is free and send him a invitation.
     }
+
+
     if(str == "ACPT") {
       str = "server> Invite Rejected.";
       if(recv_str.find("YES") != string::npos)
@@ -399,6 +410,8 @@ void *main_code(void* socketinfo) {
 	perror("send");
       //go to online_user.txt and check if he is free, update his conference_id. go to conference_id.txt and add him at the bottom. if he is not free, notify him to /leave first and then accept other request.
     }
+
+
     if(str == "DATA") {
       message = recv_str.substr(recv_str.find(' ')+1, recv_str.length()-1);
       //      cout << "\nMessage is : " << message <<endl;
@@ -424,6 +437,40 @@ void *main_code(void* socketinfo) {
       //go to online_user.txt, fetch the conference_id. go to conference_id.txt.. fetch all other members and relay message to them.
     }
 	    
+
+    if(str == "MEMB") {
+      if(onlineuser.conf_id == 0)
+	str = "server> You are not in a conference.";
+      else {
+	file = fopen("onlineuser.txt", "r+");
+	found = 0;
+	str = "";
+	while(!feof(file)) {
+	  if(!fread(&onlineuser_temp,sizeof(online_user),1,file))
+	    break;
+	  cout << " id : " << onlineuser_temp.conf_id;
+	  if(onlineuser_temp.conf_id == onlineuser.conf_id && onlineuser_temp.conf_id != 0)
+	    {
+	      str.append(onlineuser_temp.name);
+	      str.append(", ");
+	      found = 1;
+	    }
+	}
+	fclose(file);
+	if(found) {
+	  str[str.length()-2] = '.';
+	  str = "server> Members : " + str;
+	}
+	else {
+	  str = "server> No member.";
+	}
+      }
+      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
+	perror("send");
+      //LIST ALL USER WHO ARE FREE. go to online_user.txt and check if conference_id is NULL... display him. 
+    }
+
+
     if(str == "KICK") {
       str = "Some error";
       if(userinfo.designated == 0)
@@ -470,7 +517,7 @@ void *main_code(void* socketinfo) {
     if(str == "ENDC") {
       //go to conference_id.txt... notify each member in the list and remove that file.
       if(onlineuser.conf_id == 0)
-	str = "server> You are not in a conference. Nothing to End";
+	str = "server> You are not in a conference. Nothing to End.";
       else {
 	file = fopen("conference.txt", "r");
 	found = 0;
@@ -488,7 +535,7 @@ void *main_code(void* socketinfo) {
 	str = "ENDD Conference ended by Admin.";
 	if(found) {
 	  cout << "yes conference ends now";
-	  file = fopen("onlineuser.txt", "r+");
+	  file = fopen("onlineuser.txt", "r");
 	  while(!feof(file)) {
 	    if(!fread(&onlineuser_temp,sizeof(online_user),1,file))
 	      break;
@@ -558,13 +605,14 @@ void *main_code(void* socketinfo) {
     if(str == "HELP") {
       str = "";
       str.append("COMMAND \t- DESCRIPTION");
-      str.append("\n start  \t- begin a conference.");
-      str.append("\n users  \t- see online free users.");
-      str.append("\n invite \t- send join request to online free user.");
-      str.append("\n topic  \t- view topic of conference.");
-      str.append("\n leave  \t- leave the conference.");
-      str.append("\n logout \t- logout.");
+      str.append("\n start  \t- Create a conference.");
+      str.append("\n users  \t- View all online idle users.");
+      str.append("\n invite \t- Invite an online idle user.");
+      str.append("\n topic  \t- View topic of the conference.");
+      str.append("\n members\t- View members in your conference.");
+      str.append("\n leave  \t- Leave the conference.");
       str.append("\n end    \t- End a conference.");
+      str.append("\n logout \t- Logout.");
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 	perror("send");
       //go to online_user.txt get his conference_id... remove him from conference. and then remove him from online_user.txt also.

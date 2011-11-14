@@ -189,6 +189,10 @@ int main(int argc, char *argv[])
 	  prompt_flag = 1;
 	}
 
+	if(command == "members") {
+	  str = "MEMB";
+	}
+
 	if(command == "kick") {
 	  str = "KICK";
 	  str.append(" ");

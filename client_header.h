@@ -59,6 +59,6 @@ int temp_flag;
 pthread_t pth;
 unsigned int usec = 100000;
 
-#define LIST_SIZE 12
-std::string command_list[LIST_SIZE] = {"start", "topic", "users", "invite", "data", "kick", "leave", "end", "info", "print", "help", "logout"};
+#define LIST_SIZE 13
+std::string command_list[LIST_SIZE] = {"start", "topic", "users", "invite", "data", "members", "kick", "leave", "end", "info", "print", "help", "logout"};
 
