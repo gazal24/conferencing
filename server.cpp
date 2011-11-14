@@ -435,21 +435,35 @@ void *main_code(void* socketinfo) {
       //go to conference_id.txt. check if he is the Owner then check if he is in conference list then remove his name from conference_id.txt and notify him. Then go to online_user.txt and change his conference_id to NULL.
     }
 
+
     if(str == "LEAV") {
-      fflush(stdout);
+      //TODO : NOTIFY ALL OTHER USERS.
+      //go to conference_id.txt and remove him from the list. go to online_user.txt and change his conference_id to NULL. If this person is designated user... inform all other members and end the room.
       if(onlineuser.conf_id == 0)
 	str = "server> You are not in a room :P.";
+      
+      file = fopen("conference.txt", "r");
+      found = 0;
+      while(!feof(file)) {
+	if(!fread(&conference_temp,sizeof(conference_room),1,file))
+	  break;
+	if(strcmp(onlineuser.name, conference_temp.admin) == 0) {
+	  found = 1; break;
+	}
+      }
+      fclose(file);
+      
+      if(found) {
+	str = "server> You are the admin of this conference. You cannot leave.";
+	str.append("\nserver> Issue /end to end conference.");
+      }
       else {
 	onlineuser.conf_id = 0;
 	update_onlineusers(userinfo, onlineuser);
-	update_conferences();
-	//also close the conference in conference.txt when admin leaves.
 	str = "server> You exited the room.";
       }
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 	perror("send");
-      //TODO : NOTIFY ALL OTHER USERS.
-      //go to conference_id.txt and remove him from the list. go to online_user.txt and change his conference_id to NULL. If this person is designated user... inform all other members and end the room.
     }
 
 
@@ -464,7 +478,9 @@ void *main_code(void* socketinfo) {
 	  if(!fread(&conference_temp,sizeof(conference_room),1,file))
 	    break;
 	  if(strcmp(onlineuser.name, conference_temp.admin) == 0) {
-	    found = 1; break;
+	    found = 1;
+	    remove_conference(onlineuser);
+	    break;
 	  }
 	}
 	fclose(file);
@@ -548,6 +564,7 @@ void *main_code(void* socketinfo) {
       str.append("\n topic  \t- view topic of conference.");
       str.append("\n leave  \t- leave the conference.");
       str.append("\n logout \t- logout.");
+      str.append("\n end    \t- End a conference.");
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 	perror("send");
       //go to online_user.txt get his conference_id... remove him from conference. and then remove him from online_user.txt also.
@@ -579,8 +596,24 @@ void update_onlineusers(user_info userinfo, online_user onlineuser)
 }
 
 
-void update_conferences()
+void remove_conference(online_user onlineuser)
 {
+  FILE *file, *file_temp;
+  conference_room conference_temp;
+  
+  file = fopen("conference.txt", "r");
+  file_temp = fopen("conference_temp.txt", "w");
+  
+  while(!feof(file)) {
+    if(!fread(&conference_temp,sizeof(conference_room),1,file))
+      break;
+    if(strcmp(conference_temp.admin, onlineuser.name) != 0)
+      fwrite(&conference_temp,sizeof(conference_room),1,file_temp);
+  }
+  fclose(file);
+  fclose(file_temp);
+  remove("conference.txt");
+  rename("conference_temp.txt", "conference.txt");
   cout << "\nIn update_conferences\n";
 }
 

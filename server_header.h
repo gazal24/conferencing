@@ -71,6 +71,6 @@ struct socket_info socketinfo;
 
 //PROTOTYPES
 void update_onlineusers(user_info, online_user);
-void update_conferences();
+void remove_conference(online_user);
 int get_next_conference_id();
 void *main_code(void*);
