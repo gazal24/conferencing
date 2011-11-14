@@ -70,7 +70,6 @@ struct socket_info socketinfo;
 
 
 //PROTOTYPES
-void get_info(user_info, online_user);
 void update_onlineusers(user_info, online_user);
 void update_conferences();
 int get_next_conference_id();

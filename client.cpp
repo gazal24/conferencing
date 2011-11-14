@@ -313,6 +313,16 @@ void *recvthread(void* arg)
       found = str.find("CONF");
       conf_id = atoi(str.substr(found+5, str.length()-found-1).c_str());
       request_flag = 1;
+      str = "server>" + str.substr(str.find(' '), found-str.find(' '));
+    }
+    else if(str.substr(0, str.find(' ')) == "ENDD") {
+      str = "server>" + str.substr(str.find(' '), str.length()-4);
+      cout << endl << str;
+      str = "LEAV";
+      if (send (sockfd, str.c_str(), strlen(str.c_str()), 0) == -1) {
+	perror("send:"); exit(0);
+      }
+      continue;
     }
     cout << endl << str << endl;
     str = "";

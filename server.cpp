@@ -166,7 +166,7 @@ void *main_code(void* socketinfo) {
 	fwrite(&userinfo,sizeof(user_info),1,file);
 	fclose(file);
       }	
-      fflush(0);
+      fflush(stdout);
     }//END OF if(str = "REGR")
 
 	  
@@ -192,7 +192,7 @@ void *main_code(void* socketinfo) {
       pass = str;
 
       cout << user << pass;
-      fflush(0);
+      fflush(stdout);
 	    
       //STRUCT READ
       str = "NOAUTH";
@@ -229,7 +229,7 @@ void *main_code(void* socketinfo) {
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 	perror("send");
       cout << "yea i got relay from thread" << endl;
-      fflush(0);
+      fflush(stdout);
     }//END OF if(str = "RELAY")
 
 
@@ -238,7 +238,6 @@ void *main_code(void* socketinfo) {
       //CHECK THE GUY IS DESIGNATED OR NOT. refer userinfo.txt OR chk flag in process itself.
       //CHECK IF HE IS FREE OR NOT. refer online_user.txt for this.
 	      
-      get_info(userinfo, onlineuser);
       if(userinfo.designated != 1)
 	str = "server> You are not designated to create conference";
       else if(onlineuser.conf_id != 0)
@@ -267,7 +266,7 @@ void *main_code(void* socketinfo) {
 
     if(str == "TOPI") {
       str = "server> You are not in any conference. No Topic Found";
-      file = fopen("conference.txt", "a+");
+      file = fopen("conference.txt", "r");
       found = 0;
       while(!feof(file)) {
 	if(!fread(&conference_temp,sizeof(conference_room),1,file))
@@ -279,9 +278,9 @@ void *main_code(void* socketinfo) {
       fclose(file);
       //	      cout << endl << "confid " << conference_temp.id;
       //	      cout << endl << "onlien_confid " << onlineuser.conf_id;
-      fflush(0);
+      fflush(stdout);
       if(found) {
-	str = "server>Topic : "; 
+	str = "server> Topic : "; 
 	str.append(conference_temp.topic);
       }
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
@@ -325,7 +324,6 @@ void *main_code(void* socketinfo) {
       else if(onlineuser.conf_id == 0)
 	str = "You are not in any chat.";
       else { //espp
-	cout << "\nhere*******";
 	file = fopen("conference.txt", "a+");
 	while(!feof(file)) {
 	  if(!fread(&conference_temp,sizeof(conference_room),1,file))
@@ -335,12 +333,12 @@ void *main_code(void* socketinfo) {
 	  }
 	}
 	fclose(file);
-	cout << "str" << str;
-	cout << "\nfound : " << found << endl;
-	fflush(0);
+	//	cout << "str" << str;
+	//	cout << "\nfound : " << found << endl;
+	fflush(stdout);
 		
 	if(found == 0)
-	  str = "You are not the admin of this conference.";
+	  str = "server> You are not the admin of this conference.";
 	else {
 	  file = fopen("onlineuser.txt", "r+");
 	  while(!feof(file)) {
@@ -348,24 +346,24 @@ void *main_code(void* socketinfo) {
 	      break;
 	    if(strcmp(message.c_str(), onlineuser_temp.name) == 0) {
 	      if(onlineuser_temp.conf_id == 0) {
-		str = "User has been sent an invite."; invite_flag = 1;
+		str = "sever>User has been sent an invite."; invite_flag = 1;
 		break;
 	      }
 	      else {
-		str = "User already in a conference"; break;
+		str = "server> User already in a conference"; break;
 	      }
 	    }
 	    else {
-	      str = "User not found";
+	      str = "server> User not found";
 	    }
 	  }
 	}
 	fclose(file);
-	cout << "\nstr_1 : " << str_1;
-	cout << "\nstr : " << str;
-	cout << "\ninvite_flag : " << invite_flag << endl;
-	cout << "\nNew_fd : " << onlineuser_temp.new_fd << endl;
-	fflush(0);
+	//	cout << "\nstr_1 : " << str_1;
+	//	cout << "\nstr : " << str;
+	//	cout << "\ninvite_flag : " << invite_flag << endl;
+	//	cout << "\nNew_fd : " << onlineuser_temp.new_fd << endl;
+	fflush(stdout);
       }
 	      
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
@@ -394,7 +392,7 @@ void *main_code(void* socketinfo) {
 	    ptr = strtok (NULL, " ");
 	    onlineuser.conf_id = atoi(ptr);
 	    update_onlineusers(userinfo, onlineuser);
-	    str = "You joined this room. <Welcome>";
+	    str = "server> You joined this room. <Welcome>";
 	  }
 	}
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
@@ -403,7 +401,7 @@ void *main_code(void* socketinfo) {
     }
     if(str == "DATA") {
       message = recv_str.substr(recv_str.find(' ')+1, recv_str.length()-1);
-      cout << "\nMessage is : " << message <<endl;
+      //      cout << "\nMessage is : " << message <<endl;
       str = "";
       str.append(onlineuser.name);
       str.append("> ");
@@ -416,7 +414,7 @@ void *main_code(void* socketinfo) {
 	  if(!fread(&onlineuser_temp,sizeof(online_user),1,file))
 	    break;
 	  if(onlineuser_temp.conf_id == onlineuser.conf_id && strcmp(onlineuser_temp.name, onlineuser.name) !=  0) {
-	    cout << onlineuser_temp.name;
+	    //	    cout << onlineuser_temp.name;
 	    if (send(onlineuser_temp.new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 	      perror("send");
 	  }
@@ -438,8 +436,7 @@ void *main_code(void* socketinfo) {
     }
 
     if(str == "LEAV") {
-      cout << "yeah i ma here at leave \n";
-      fflush(0);
+      fflush(stdout);
       if(onlineuser.conf_id == 0)
 	str = "server> You are not in a room :P.";
       else {
@@ -457,11 +454,43 @@ void *main_code(void* socketinfo) {
 
 
     if(str == "ENDC") {
-      
       //go to conference_id.txt... notify each member in the list and remove that file.
+      if(onlineuser.conf_id == 0)
+	str = "server> You are not in a conference. Nothing to End";
+      else {
+	file = fopen("conference.txt", "r");
+	found = 0;
+	while(!feof(file)) {
+	  if(!fread(&conference_temp,sizeof(conference_room),1,file))
+	    break;
+	  if(strcmp(onlineuser.name, conference_temp.admin) == 0) {
+	    found = 1; break;
+	  }
+	}
+	fclose(file);
+
+	str = "ENDD Conference ended by Admin.";
+	if(found) {
+	  cout << "yes conference ends now";
+	  file = fopen("onlineuser.txt", "r+");
+	  while(!feof(file)) {
+	    if(!fread(&onlineuser_temp,sizeof(online_user),1,file))
+	      break;
+	    if(onlineuser_temp.conf_id == onlineuser.conf_id && strcmp(onlineuser.name, onlineuser_temp.name) != 0)
+	      if (send(onlineuser_temp.new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
+		perror("send");
+	  }
+	  fclose(file);
+	  str = "ENDD You ended this conference.";
+	}
+	else 
+	  str = "server> You are not the admin of this conference. You cannot End it.";
+      }
+      if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
+	perror("send");
     }
-
-
+    
+    
     if(str == "LOGO") {
       //go to online_user.txt get his conference_id... remove him from conference. and then remove him from online_user.txt also.
       file = fopen("onlineuser.txt", "r");
@@ -486,7 +515,7 @@ void *main_code(void* socketinfo) {
 
     if(str == "PRIN") {
       cout << "\nONLINE USERS DETAILS";
-      fflush(0);
+      fflush(stdout);
       file = fopen("onlineuser.txt", "r+");
       while(!feof(file)) {
 	if(!fread(&onlineuser_temp,sizeof(online_user),1,file))
@@ -495,7 +524,7 @@ void *main_code(void* socketinfo) {
       }
       fclose(file);
       cout << "\nCONFERENCE DETAILS";
-      fflush(0);
+      fflush(stdout);
       file = fopen("conference.txt", "a+");
       while(!feof(file)) {
 	if(!fread(&conference_temp,sizeof(conference_room),1,file))
@@ -504,7 +533,7 @@ void *main_code(void* socketinfo) {
       }
       fclose(file);
       cout << "\nEND OF DETAILS";
-      fflush(0);
+      fflush(stdout);
       str = "+OK";
       if (send(new_fd, str.c_str(), strlen(str.c_str()), 0) == -1)
 	perror("send");
@@ -524,20 +553,12 @@ void *main_code(void* socketinfo) {
       //go to online_user.txt get his conference_id... remove him from conference. and then remove him from online_user.txt also.
     }
 
-    fflush(0);
+    fflush(stdout);
   }//END OF while(1)	  
 	  
 }
 
 
-
-
-void get_info(user_info userinfo, online_user onlineuser)
-{
-  cout << "\n in is_free : " << userinfo.name;
-  cout << onlineuser.name << endl;
-  //UPDATE userinfo, onlineuser with what is present in file;
-}
 
 
 void update_onlineusers(user_info userinfo, online_user onlineuser)
@@ -572,7 +593,7 @@ int get_next_conference_id()
   fread(&nextConfId,sizeof(next_Conf_Id),1,file);
   val = ++nextConfId.id;
   printf("\nVAl %d\n", val);
-  fflush(0);
+  fflush(stdout);
   fseek(file, (-1*sizeof(next_Conf_Id)),SEEK_CUR);
   fwrite(&nextConfId,sizeof(next_Conf_Id),1,file);
   fclose(file);

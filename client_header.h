@@ -40,6 +40,7 @@ char *HOSTNAME =(char*)malloc(sizeof(char)*50);
 string str="";
 string command,message;
 
+
 char buf[500];
 char user[10],pass[10];
 char temp[10];
