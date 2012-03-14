@@ -1,7 +1,5 @@
 ===============================
-Assignemt 5
-Gazal Garg : 08CS3012
-Repaka Avinash : 08EC1027
+Gazal Garg
 Group Conference Specifications
 ===============================
 
